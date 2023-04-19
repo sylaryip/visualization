@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>向量和坐标系</title>
+  </head>
+  <body>
+    <p>
+      假设，我们要在宽 512 * 高 256 的一个 Canvas
+      画布上实现如下的视觉效果。其中，山的高度是 100，底边
+      200，两座山的中心位置到中线的距离都是 80，太阳的圆心高度是 150。
+    </p>
+    <h2>顶点换算</h2>
+    <p>
+      <img src="./01.png" />
+    </p>
+    <canvas width="512" height="256"></canvas>
+
+    <h2>坐标系转换</h2>
+    <p>
+      <img src="./02.png" />
+    </p>
+
+    <canvas width="512" height="256"></canvas>
+
+    <h2>练习-画树</h2>
+    <canvas width="500" height="350"></canvas>
+    <script src="https://unpkg.com/roughjs@latest/bundled/rough.js"></script>
+    <script type="module">
+      import { Vector2D } from '../common/lib/Vector2d.js';
+
+      const hillOpts = {
+        roughness: 2.8,
+        strokeWidth: 2,
+        fill: 'blue',
+      };
+      const sumOpts = {
+        stroke: 'red',
+        strokeWidth: 4,
+        fill: 'rgba(255,255,0,0.4)',
+        fillStyle: 'solid',
+      };
+
+      (() => {
+        const rc = rough.canvas(document.querySelectorAll('canvas')[0]);
+        function init() {
+          rc.path('M76 256L176 156L276 256', hillOpts);
+          rc.path('M236 256L336 156L436 256', hillOpts);
+          rc.circle(256, 106, 105, sumOpts);
+        }
+        init();
+      })();
+
+      (() => {
+        const rc = rough.canvas(document.querySelectorAll('canvas')[1]);
+        function init() {
+          const ctx = rc.ctx;
+          // 坐标系转换
+          ctx.translate(256, 256); // 原点移动到画布中心
+          ctx.scale(1, -1); // y轴沿x轴向上翻转
+
+          rc.path('M-180 0L-80 100L20 0', hillOpts);
+          rc.path('M-20 0L80 100L180 0', hillOpts);
+          rc.circle(0, 150, 105, sumOpts);
+        }
+        init();
+      })();
+
+      (() => {
+        const canvas = document.querySelectorAll('canvas')[2];
+        const ctx = canvas.getContext('2d');
+        function init() {
+          ctx.translate(0, canvas.height);
+          ctx.scale(1, -1);
+          ctx.lineCap = 'round';
+
+          const v0 = new Vector2D(256, 0);
+          drawBranch(ctx, v0, 50, 10, 1, 3);
+        }
+
+        // context Canvas2D 上下文
+        // v0 起始向量
+        // length 当前树枝长度
+        // thickness 树枝的粗细
+        // dir 树枝的方向, 用与 x 轴夹角表示，单位弧度
+        // bias 随机偏向因子，用于让树枝朝向有一定随机性
+        function drawBranch(context, v0, length, thickness, dir, bias) {
+          const v = new Vector2D().rotate(dir).scale(length);
+          const v1 = v0.copy().add(v);
+
+          context.lineWidth = thickness;
+          context.beginPath();
+          context.moveTo(...v0);
+          context.lineTo(...v1);
+          context.stroke();
+
+          if (thickness > 2) {
+            const left =
+              Math.PI / 4 + 0.5 * (dir + 0.2) + bias * (Math.random() - 0.5);
+            drawBranch(
+              context,
+              v1,
+              length * 0.9,
+              thickness * 0.8,
+              left,
+              bias * 0.9
+            );
+            const right =
+              Math.PI / 4 + 0.5 * (dir - 0.2) + bias * (Math.random() - 0.5);
+            drawBranch(
+              context,
+              v1,
+              length * 0.9,
+              thickness * 0.8,
+              right,
+              bias * 0.9
+            );
+          }
+
+          if (thickness < 5 && Math.random() < 0.3) {
+            context.save();
+            context.strokeStyle = '#c72c35';
+            const th = Math.random() * 6 + 3;
+            context.lineWidth = th;
+            context.beginPath();
+            context.moveTo(...v1);
+            context.lineTo(v1.x, v1.y - 2);
+            context.stroke();
+            context.restore();
+          }
+        }
+
+        init();
+      })();
+    </script>
+  </body>
+</html>
