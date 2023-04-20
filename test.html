@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <canvas height="400" width="400"></canvas>
+    <script>
+      const canvas = document.querySelector('canvas');
+      const ctx = canvas.getContext('2d');
+      ctx.translate(200, 200);
+      ctx.scale(1, -1);
+
+      ctx.beginPath();
+      ctx.strokeStyle = '#c72c35';
+      ctx.lineWidth = 4;
+      ctx.lineCap = 'round';
+      ctx.moveTo(0, 0);
+      ctx.lineTo(195, 0);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.strokeStyle = '#978194';
+      ctx.lineWidth = 4;
+      ctx.lineCap = 'round';
+      ctx.moveTo(0, 0);
+      ctx.lineTo(-195, 0);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.strokeStyle = 'yellow';
+      ctx.lineWidth = 4;
+      ctx.lineCap = 'round';
+      ctx.moveTo(0, 0);
+      ctx.lineTo(0, 195);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.strokeStyle = 'blue';
+      ctx.lineWidth = 4;
+      ctx.lineCap = 'round';
+      ctx.moveTo(0, 0);
+      ctx.lineTo(0, -195);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.fillStyle = 'black';
+      ctx.arc(0, 0, 5, 0, Math.PI * 2, false);
+      ctx.fill();
+
+      ctx.strokeStyle = 'green';
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      // ctx.lineTo(100, 100);
+      ctx.arcTo(100, 50, 100, 90, 130);
+      ctx.stroke();
+    </script>
+  </body>
+</html>
